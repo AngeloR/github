@@ -18,13 +18,13 @@ class Plugin_github extends Abstract_Plugin implements Plugin_Interface {
 	}
 	
 	public function public_routes() {
-		dispatch_post('/___settings/github/post-receive', array('Plugin_github_Controller','post_receive_hook'));
+		dispatch_post('/___settings/github/post-receive/:post_receive', array('Plugin_github_Controller','post_receive_hook'));
 		
 	}
 	
 	public function private_routes() {
 		dispatch_get('/___settings/github', array('Plugin_github_Controller', 'list_projects'));
-		dispatch_post('/___settings/github', array());
+		dispatch_post('/___settings/github', array('Plugin_github_Controller', 'create_integration_handler'));
 		dispatch_delete('/___settings/github', array());
 		dispatch_put('/___settings/github', array());
 	}
@@ -36,6 +36,16 @@ class Plugin_github extends Abstract_Plugin implements Plugin_Interface {
 		$menu_helper = new Menu_Helper();
 		$menu_helper->add($menu,'/___settings');
 		$menu_helper->parse();
+	}
+	
+	/**
+	 * 
+	 * This generates the same key if the same unique key is passed in. For the 
+	 * GitHub integration plugin, we use the full path to the worknotes directory
+	 * @param unknown_type $unique_key
+	 */
+	public static function generate_post_receive($unique_key) {
+		return sha($unique_key.md5($unique_key.'38h1v'));
 	}
 	
 	public function get_projects() {
