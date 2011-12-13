@@ -48,6 +48,11 @@ class Plugin_github extends Abstract_Plugin implements Plugin_Interface {
 		return sha1($unique_key.md5($unique_key.'38h1v'));
 	}
 	
+	/**
+	 * 
+	 * Generates a valid path to a project
+	 * @param mixed $path_to_worknotes
+	 */
 	public static function project_path_exists($path_to_worknotes) {
 		$pieces = explode('/',$path);
 		$pieces[] = 'Worknotes';
