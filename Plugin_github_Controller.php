@@ -4,9 +4,7 @@ class Plugin_github_Controller extends Controller {
 	
 	public static function post_receive_hook($post_receive) {
 		$project = R::findOne('github_project','post_receive = ?',array($post_receive));
-
-
-		
+		Model_Log::log('info','payload received for: '.$post_receive);
 		if(!empty($project)) {
 			$payload = $_POST['payload'];
 			$payload = json_decode($payload);
