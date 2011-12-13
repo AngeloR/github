@@ -45,10 +45,17 @@ class Plugin_github extends Abstract_Plugin implements Plugin_Interface {
 	 * @param unknown_type $unique_key
 	 */
 	public static function generate_post_receive($unique_key) {
-		return sha($unique_key.md5($unique_key.'38h1v'));
+		return sha1($unique_key.md5($unique_key.'38h1v'));
 	}
 	
-	public function get_projects() {
+	public static function project_path_exists($path_to_worknotes) {
+		$pieces = explode('/',$path);
+		$pieces[] = 'Worknotes';
+		$pieces[] = date('Y');	// current year
+		$month = date('F');
+		$path = implode('/',$pieces);
+		
+		return R::dispense('node','path = ? and title = ?',array($path,$month));
 		
 	}
 }
