@@ -4,18 +4,21 @@ class Plugin_github_Controller extends Controller {
 	
 	public static function post_receive_hook($post_receive) {
 		$project = R::findOne('github_project','post_receive = ?',array($post_receive));
-		Model_Log::log('info','payload received for: '.$post_receive);
+
 		if(!empty($project)) {
-			$payload = $_POST['payload'];
-			$payload = json_decode($payload);
-			Model_Log::log('info',$payload);
-			$text = self::parse_text($payload['repository']);
+			$payload = array_shift($_POST);
+			$payload = json_decode(json_encode($payload));
+			if(!$payload) {
+				Model_Log::log('error','Bad payload received for: '.$project->name);
+			}
+			Model_Log::log('info','Payload received for: '.$project->name."\r\n\r\n".print_r($payload,true));
+			$text = self::parse_text($payload->{'repository'});
 			
 			// if the project path exists, continue
 			$path = Plugin_github::project_path_exists($project->path);
 			if($path) {
 				
-				foreach($payload['commits'] as $i => $commit) {
+				foreach($payload->{'commits'} as $i => $commit) {
 					$ptext = $text.self::parse_commit($commit);
 					
 					// Write this node!
@@ -37,14 +40,14 @@ class Plugin_github_Controller extends Controller {
 	}
 	
 	public static function parse_text($repo) {
-		$text = "*[".$repo['name']."](".$repo['url'].")*\r\n";
+		$text = "*[".$repo->{'name'}."](".$repo->{'url'}.")*\r\n";
 		return $text;
 	}
 	
 	public static function parse_commit($commit) {
-		$text = "*id: *[".$commit['id']."](".$commit['url'].")";
-		$text .= "\r\n*By:* ".$commit['author'];
-		$text .= "\r\n\r\n".$commit['message'];
+		$text = "*id: *[".$commit->{'id'}."](".$commit->{'url'}.")";
+		$text .= "\r\n*By:* ".$commit->{'author'};
+		$text .= "\r\n\r\n".$commit->{'message'};
 		
 		return $text;
 	}
