@@ -54,13 +54,19 @@ class Plugin_github extends Abstract_Plugin implements Plugin_Interface {
 	 * @param mixed $path_to_worknotes
 	 */
 	public static function project_path_exists($path_to_worknotes) {
-		$pieces = explode('/',$path);
+		$pieces = explode('/',$path_to_worknotes);
 		$pieces[] = 'Worknotes';
 		$pieces[] = date('Y');	// current year
 		$month = date('F');
-		$path = implode('/',$pieces);
+		$tmp = array();
 		
-		return R::dispense('node','path = ? and title = ?',array($path,$month));
-		
+		foreach($pieces as $i => $x) {
+			if(!empty($x)) {
+				$tmp[] = $x;
+			}
+		}
+		$path = '/'.implode('/',$tmp);
+
+		return R::findOne('node','path = ? and title = ?',array($path,$month));
 	}
 }
