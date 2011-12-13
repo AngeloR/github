@@ -7,7 +7,7 @@ class Plugin_github_Controller extends Controller {
 
 		if(!empty($project)) {
 			$payload = array_shift($_POST);
-			$payload = json_decode(json_encode($payload));
+			$payload = json_decode($payload);
 			if(!$payload) {
 				Model_Log::log('error','Bad payload received for: '.$project->name);
 			}
